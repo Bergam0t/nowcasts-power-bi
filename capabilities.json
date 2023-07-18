@@ -1,0 +1,105 @@
+{
+  "dataRoles": [
+    {
+      "displayName": "Values (y axis)",
+      "description": "Numeric values - the thing you are measuring.",
+      "kind": "GroupingOrMeasure",
+      "name": "value"
+    },
+
+    {
+      "displayName": "Dates (x axis)",
+      "description": "Dates (text column in format yyyy-mm-dd or dd-mm-yyyy, or PowerBI date column).",
+      "kind": "GroupingOrMeasure",
+      "name": "date"
+    },
+
+    {
+      "displayName": "Identifier - e.g. KPI Name (OPTIONAL)",
+      "description": "Optional for single graph or card. If a single value for the whole dataset, will be used as the graph/card title by default. Mandatory for summary tables and summary matrix.",
+      "kind": "GroupingOrMeasure",
+      "name": "what"
+    }
+  ],
+  "dataViewMappings": [
+    {
+
+	"conditions": [
+        {
+          "value": {
+            "max": 1
+          },
+          "date": {
+            "max": 1
+          },
+          "what": {
+            "max": 1
+          }
+        }
+
+
+
+
+      ],
+      "scriptResult": {
+        "dataInput": {
+          "table": {
+            "rows": {
+              "select": [
+                {
+                  "for": {
+                    "in": "value"
+                  }
+                },
+                {
+                  "for": {
+                    "in": "date"
+                  }
+                },
+                {
+                  "for": {
+                    "in": "what"
+                  }
+                }
+              ],
+              "dataReductionAlgorithm": {
+                "top": {}
+              }
+            }
+          }
+        },
+        "script": {
+          "scriptProviderDefault": "R",
+          "scriptOutputType": "html",
+          "source": {
+            "objectName": "rcv_script",
+            "propertyName": "source"
+          },
+          "provider": {
+            "objectName": "rcv_script",
+            "propertyName": "provider"
+          }
+        }
+      }
+    }
+  ],
+  "objects": {
+    "rcv_script": {
+      "properties": {
+        "provider": {
+          "type": {
+            "text": true
+          }
+        },
+        "source": {
+          "type": {
+            "scripting": {
+              "source": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "suppressDefaultTitle": true
+}

@@ -1,0 +1,17 @@
+{
+    "version": "0.0.1",
+    "author": {"name":"NHS BNSSG (Nowcasts), Sammi Rosser (Power BI Implementation)","email":"samantha.rosser@nhs.net"},
+    "resources": [
+        {
+            "resourceId": "rId0",
+            "sourceType": 5,
+            "file": "resources/nowcastspowerbiForce12FBE955EFE841FFBDB82AABE40438AC.pbiviz.json"
+        }
+    ],
+    "visual": {"name":"nowcastspowerbiForce","displayName":"Nowcasts (BNSSG) - Power BI","guid":"nowcastspowerbiForce12FBE955EFE841FFBDB82AABE40438AC","visualClassName":"Visual","version":"0.0.1","description":"Simple Short-term Forecasts","supportUrl":"https://bergam0t.github.io/","gitHubUrl":"https://github.com/Bergam0t/nowcasts-power-bi"},
+    "metadata": {
+        "pbivizjson": {
+            "resourceId": "rId0"
+        }
+    }  
+}
