@@ -121,7 +121,7 @@ p <- ggplotly(
 ####################################################
 
 ############# Create and save widget ###############
-internalSaveWidget(p, 'out.html');
+internalSaveWidget(p %>% plotly::partial_bundle(local=FALSE), 'out.html');
 ####################################################
 
 ################ Reduce paddings ###################
