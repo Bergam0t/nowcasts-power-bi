@@ -25,8 +25,6 @@ colnames(dataset) <- c("value", "date", "what")
 # dataset <- dataset %>% bind_cols(date1=date_list) %>% select(-dates) %>% rename(date=date1)
 # dataset <- dataset %>% tidyr::gather("what", "value", -date)
 
-
-
 dat1 <- dataset %>% 
   mutate(date = as.Date(date)) %>% 
   rename(num=value, measure=what, dates=date)
@@ -52,14 +50,19 @@ options(warn=-1)
 
 dat2<-lapply(unique(dat1$measure),function(z) {
   tmp0<-dat1[which(dat1$measure==z),]
+  
   tmp1<-tmp0 %>%
     filter(dates<=today_date) %>%
     do(tail(.,n=fitting_window))
+  
   tmp2<-ts(tmp1$num,start=c(as.numeric(format(tmp1$dates[1],"%Y")),as.numeric(format(tmp1$dates[1],"%j"))))
+  
   err_ets<-tsCV(tmp2,fets,h=1)
   ts_ets<-mean(err_ets^2,na.rm=TRUE)
+  
   err_arima<-tsCV(tmp2,farima,h=1)
   ts_arima<-mean(err_arima^2,na.rm=TRUE)
+  
   if (ts_ets<ts_arima) {
     tmp3<-tmp2 %>%
       ets()
@@ -73,18 +76,24 @@ dat2<-lapply(unique(dat1$measure),function(z) {
       forecast(h=proj_window)
     print(paste("fitted arima to",tmp1$measure[1]," (arima order:",paste(arimaorder(tmp3),collapse=" "),")"),quote=FALSE)
   }
-  ycentral<-c(tmp4$x,tmp4$mean)
-  ylower1<-c(tmp4$x,tmp4$lower[,2])
-  ylower2<-c(tmp4$x,tmp4$lower[,1])
-  yupper1<-c(tmp4$x,tmp4$upper[,2])
-  yupper2<-c(tmp4$x,tmp4$upper[,1])
-  x<-seq.Date(min(tmp1$dates),by=1,length.out=length(ycentral))
-  tmp5<-data.frame(measure=tmp1$measure[1],dates=x,ycentral=ycentral,ylower1=ylower1,ylower2=ylower2,yupper1=yupper1,yupper2=yupper2)
-  tmp6<-left_join(tmp5,tmp0 %>% select(-measure),by="dates")
-  return(tmp6)
+  
+  x<-seq.Date(min(tmp1$dates),by=1,length.out=length(c(tmp4$x,tmp4$mean)))
+  
+  output_df<-data.frame(measure=tmp1$measure[1],dates=x) %>%
+  mutate(ycentral=c(tmp4$x,tmp4$mean),
+        ylower1=c(tmp4$x,tmp4$lower[,2]),
+        ylower2=c(tmp4$x,tmp4$lower[,1]),
+        yupper1=c(tmp4$x,tmp4$upper[,2]),
+        yupper2=c(tmp4$x,tmp4$upper[,1])
+        ) %>% 
+        left_join(tmp0 %>% select(-measure),
+                  by="dates")
+  
+  return(output_df)
 })
 
-dat3 <- dat2 %>%
+p <- ggplotly(
+     dat2 %>%
     bind_rows() %>%
     group_by(measure) %>% 
     mutate(max_date = max(dates, na.rm=TRUE)-proj_window) %>% 
@@ -94,12 +103,7 @@ dat3 <- dat2 %>%
     mutate(yupper1a=ifelse(as.numeric(dates) %% 2 == as.numeric(today_date) %% 2,NA,yupper1a)) %>%
     mutate(ycentrala=ifelse(dates>max_date,round(ycentral,0),NA)) %>%
     mutate(ycentrala=ifelse(as.numeric(dates) %% 2 == as.numeric(today_date) %% 2,NA,ycentrala)) %>% 
-    ungroup()
-  
-# p <- DT::datatable(dat3)
-
-p <- ggplotly(
-    dat3 %>% 
+    ungroup() %>% 
     ggplot(aes(x=dates)) +
     geom_ribbon(aes(ymin=ylower1,ymax=yupper1),fill="steelblue1",alpha=0.4) +
     geom_ribbon(aes(ymin=ylower2,ymax=yupper2),fill="steelblue3",alpha=0.4) +
@@ -113,7 +117,7 @@ p <- ggplotly(
     coord_cartesian(ylim=c(0,NA)) +
     theme_minimal() +
     theme(axis.title.x=element_blank(),
-          axis.text.x=element_text(angle=45,hjust=1),
+          #axis.text.x=element_text(angle=45,hjust=1),
           axis.title.y=element_blank())
 
   )
