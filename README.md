@@ -37,4 +37,10 @@ In this case, this means having three columns (with any names)
 - one containing values
 - OPTIONAL: one containing an identifier to separate out multiple attributes/measures within the dataset
 
+# Benefits and limitations of the Power BI implementation
+
+R-based custom visuals in Power BI incur a large performance penalty due to the need to spin up a fresh R session for every visual. While some things can be done to minimize the penalty, there is always going to be a much longer load time than for a standard PowerBI visual or a custom one written in Typescript. However, this visual may help with prototyping and proof of concept dashboards.   
+
+![bildo](https://github.com/Bergam0t/nowcasts-power-bi/assets/29951987/2f46f6af-a940-43ae-a5cb-cd8cb6eaf8a7)
+
  
